@@ -1,7 +1,7 @@
 //! Driver for interacting with SSD1680 display driver
 pub use display_interface::DisplayError;
 
-use embedded_hal::delay::DelayNs;
+use embedded_hal::delay::DelayUs;
 use embedded_hal::digital::{InputPin, OutputPin};
 use embedded_hal::spi::SpiDevice;
 
@@ -26,7 +26,7 @@ where
         busy: BSY,
         dc: DC,
         rst: RST,
-        delay: &mut impl DelayNs,
+        delay: &mut impl DelayUs,
     ) -> Result<Self, DisplayError>
     where
         Self: Sized,
@@ -38,7 +38,7 @@ where
     }
 
     /// Initialise the controller
-    pub fn init(&mut self, delay: &mut impl DelayNs) -> Result<(), DisplayError> {
+    pub fn init(&mut self, delay: &mut impl DelayUs) -> Result<(), DisplayError> {
         self.interface.reset(delay);
         self.interface.cmd(cmd::Cmd::SW_RESET)?;
         self.interface.wait_until_idle(delay);
@@ -83,7 +83,7 @@ where
     }
 
     /// Start an update of the whole display
-    pub fn display_frame(&mut self, delay: &mut impl DelayNs) -> Result<(), DisplayError> {
+    pub fn display_frame(&mut self, delay: &mut impl DelayUs) -> Result<(), DisplayError> {
         self.interface.cmd_with_data(
             cmd::Cmd::UPDATE_DISPLAY_CTRL2,
             &[flag::Flag::DISPLAY_MODE_1],

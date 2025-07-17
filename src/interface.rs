@@ -1,7 +1,7 @@
 //! Display interface using SPI
 use display_interface::DisplayError;
 use embedded_hal::{
-    delay::DelayNs,
+    delay::DelayUs,
     digital::{InputPin, OutputPin},
     spi::SpiDevice,
 };
@@ -78,14 +78,14 @@ where
     }
 
     /// Waits until device isn't busy anymore (busy == HIGH)
-    pub(crate) fn wait_until_idle(&mut self, delay: &mut impl DelayNs) {
+    pub(crate) fn wait_until_idle(&mut self, delay: &mut impl DelayUs) {
         while self.busy.is_high().unwrap_or(true) {
             delay.delay_ms(1)
         }
     }
 
     /// Resets the device.
-    pub(crate) fn reset(&mut self, delay: &mut impl DelayNs) {
+    pub(crate) fn reset(&mut self, delay: &mut impl DelayUs) {
         self.rst.set_low().unwrap();
         delay.delay_ms(RESET_DELAY_MS.into());
         self.rst.set_high().unwrap();
